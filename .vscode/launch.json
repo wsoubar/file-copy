@@ -1,0 +1,13 @@
+{
+    "configurations": [
+
+        {
+            "type": "java",
+            "name": "App - first test",
+            "request": "launch",
+            "mainClass": "br.com.bradseg.coti.jarcopy.App",
+            "projectName": "jar-copy",
+            "args": "server -p 4444"
+        }
+    ]
+}
