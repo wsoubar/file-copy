@@ -2,3 +2,4 @@ target/
 .classpath
 .project
 .settings/
+sharedlib/BSAD-PdfBox-1.2.jar

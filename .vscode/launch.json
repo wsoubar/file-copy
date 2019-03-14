@@ -1,6 +1,19 @@
 {
     "configurations": [
-
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - Client",
+            "request": "launch",
+            "mainClass": "br.com.bradseg.coti.jarcopy.Client",
+            "projectName": "jar-copy"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - FileChooser",
+            "request": "launch",
+            "mainClass": "br.com.bradseg.coti.jarcopy.ui.FileChooser",
+            "projectName": "jar-copy"
+        },
         {
             "type": "java",
             "name": "App - first test",
