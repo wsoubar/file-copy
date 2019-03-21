@@ -2,6 +2,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CodeLens (Launch) - UiRunner",
+            "request": "launch",
+            "mainClass": "br.com.bradseg.coti.jarcopy.ui.UiRunner",
+            "projectName": "jar-copy"
+        },
+        {
+            "type": "java",
             "name": "CodeLens (Launch) - Client",
             "request": "launch",
             "mainClass": "br.com.bradseg.coti.jarcopy.Client",
