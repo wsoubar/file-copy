@@ -2,6 +2,20 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CodeLens (Launch) - HomeScreen",
+            "request": "launch",
+            "mainClass": "br.com.bradseg.coti.jarcopy.ui.HomeScreen",
+            "projectName": "jar-copy"
+        },
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - CopyFile",
+            "request": "launch",
+            "mainClass": "br.com.bradseg.coti.jarcopy.ui.CopyFile",
+            "projectName": "jar-copy"
+        },
+        {
+            "type": "java",
             "name": "CodeLens (Launch) - UiRunner",
             "request": "launch",
             "mainClass": "br.com.bradseg.coti.jarcopy.ui.UiRunner",
