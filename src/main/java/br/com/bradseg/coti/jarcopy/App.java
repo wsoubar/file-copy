@@ -11,9 +11,6 @@ import br.com.bradseg.coti.jarcopy.util.CommandOptions;
 public class App {
     public static void main(String[] args) {
         String type = null;
-        String host = null;
-        String port = null;
-        String filename = null;
 
         CommandOptions cmd = new CommandOptions(args);
         if (cmd.size() == 0) {
@@ -23,20 +20,25 @@ public class App {
         if (cmd.hasOption("server")) {
             type = "server";
         }
-        if (cmd.hasOption("-h")) {
-            host = cmd.valueOf("-h");
+        if (cmd.hasOption("client")) {
+            type = "client";
         }
-        if (cmd.hasOption("-p")) {
-            port = cmd.valueOf("-p");
-        }
-        System.out.println(type + " | " + host + " | " + port);
+        System.out.println(type);
 
         if (type.equals("server")) {
-            Server serv = new Server(host, port);
+            System.out.println("modo servidor");
+            Server server = new Server();
             try {
-                serv.startServer();
+                server.startServer();
             } catch (IOException e) {
-                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        } else if (type.equals("client")) {
+            System.out.println("modo cliente");
+            Client client = new Client();
+            try {
+                client.execute();
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }

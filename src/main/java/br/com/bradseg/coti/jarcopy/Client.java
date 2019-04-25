@@ -3,46 +3,101 @@ package br.com.bradseg.coti.jarcopy;
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.file.Files;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
+
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 
 /**
  * Client
  */
 public class Client {
 
-    private final static Logger LOGGER = Logger.getLogger(Client.class.getName());
+    private Properties clientProps = new Properties();
+    private Properties targetsProps = new Properties();
 
-    public static void main(String[] args) throws IOException {
-        LOGGER.setLevel(Level.INFO);
-        LOGGER.info("main method");
-        String filename ="C:/dev/java/BSAD-PdfBox-1.2.jar";
-        File file = new File(filename);
-        // localhost for testing
-        //Socket socket = new Socket("localhost", 4444);
-        Socket socket = new Socket();
-        //socket.setSoTimeout(5000);
-        socket.connect(new InetSocketAddress("localhost", 4445), 5000);
-        LOGGER.info("Connecting...");
+    public Client() {
+    }
 
-        // receive file
-        //InputStream in = sock.getInputStream();
-        BufferedOutputStream out = new BufferedOutputStream(socket.getOutputStream());
+    private void readProperties() throws IOException {
+    
+        this.clientProps = new Properties();
+        this.targetsProps = new Properties();
+
         try {
-            DataOutputStream d = new DataOutputStream(out);
-            d.writeUTF(filename);
-            Files.copy(file.toPath(), d);
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, e.getMessage(), e);
-        } finally {
-            out.close();
-            socket.close();
-            LOGGER.info("Fim client"); 
+            clientProps.load(new FileInputStream("client.properties"));
+        } catch (IOException e) {
+            System.out.println("Erro ao carregar client.properties");
+            System.out.println(e);
+            throw new IOException("Erro ao carregar client.properties", e);
+        }
+        try {
+            targetsProps.load(new FileInputStream("targets.properties"));
+        } catch (IOException e) {
+            System.out.println("Erro ao carregar targets.properties");
+            System.out.println(e);
+            throw new IOException("Erro ao carregar targets.properties", e);
         }
     }
+
+    public void execute() throws IOException {
+        JFileChooser jfc = new JFileChooser(new File(System.getProperty("user.dir"))); // FileSystemView.getFileSystemView().getHomeDirectory()
+
+        int returnValue = jfc.showOpenDialog(null);
+        // int returnValue = jfc.showSaveDialog(null);
+
+        if (returnValue == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = jfc.getSelectedFile();
+            System.out.println("===============================================");
+            System.out.println("Preparando para enviar arquivo : " + selectedFile.getAbsolutePath());
+
+            int input = JOptionPane.showConfirmDialog(null,
+                    "Confirma envio do arquivo " + selectedFile.getName() + "?");
+            // 0=yes, 1=no, 2=cancel
+            System.out.println(input == 0 ? "Envio confirmado" : "Envio cancelado");
+            if (input != 0) {
+                System.out.println("===============================================");
+                return;
+            }
+            this.readProperties();
+            String porta = clientProps.getProperty("porta");
+            List lista = Collections.list(targetsProps.propertyNames());
+            System.out.println("Quantidade de servidores : " + lista.size());
+            Iterator i = lista.iterator();
+            String servidor = null;
+            while (i.hasNext()) {
+                try {
+                    System.out.println("-----------------------------------------------");
+                    servidor = (String) i.next();
+                    Socket socket = new Socket();
+                    System.out.println("Conectando servidor : "+ servidor);
+                    socket.connect(new InetSocketAddress(servidor, Integer.valueOf(porta)));
+
+                    // receive file // InputStream in = sock.getInputStream();
+                    BufferedOutputStream out = new BufferedOutputStream(socket.getOutputStream());
+                    DataOutputStream dos = new DataOutputStream(out);
+                    dos.writeUTF(selectedFile.getAbsolutePath());
+                    Files.copy(selectedFile.toPath(), dos);
+
+                    System.out.println("Enviado com SUCESSO.");
+                    // fechar conexão??
+                    out.close();
+                    socket.close();
+
+                } catch (Exception ex) {
+                    System.out.println("FALHA!!!!!! ARQUIVO NAO ENVIADO. " + ex.getLocalizedMessage());
+                }
+            }
+            System.out.println("===============================================");
+        }
+    }
+
 }

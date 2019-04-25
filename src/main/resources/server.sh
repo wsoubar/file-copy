@@ -1,0 +1,1 @@
+java -jar -Duser.language=en jar-copy-1.0-SNAPSHOT.jar server

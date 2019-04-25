@@ -5,84 +5,72 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Properties;
 
 /**
  * Server
  */
 public class Server {
-    public static void main(String[] args) throws IOException {
-        // create socket
-        ServerSocket servsock = new ServerSocket(4444);
 
-        while (true) {
-            System.out.println("Waiting...");
-            Socket sock = servsock.accept();
-            System.out.println("Accepted connection : " + sock);
-
-            // sendfile
-            File myFile = new File(args[0]);
-            FileInputStream in = new FileInputStream(myFile);
-            OutputStream out = sock.getOutputStream();
-            System.out.println("Sending...");
-
-            byte[] mb = new byte[1024];
-            for (int c = in.read(mb); c > -1; c = in.read(mb)) {
-                out.write(mb, 0, c);
-            }
-        }
-    }
-
-    private String host;
-    private String port;
     private ServerSocket servsock = null;
-    private final static Logger LOGGER = Logger.getLogger(Client.class.getName());
+    private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 
     public Server() {
-        LOGGER.setLevel(Level.INFO);
-    }
-
-    public Server(String host, String port) {
-        this.host = host;
-        this.port = port;
-        LOGGER.setLevel(Level.INFO);
     }
 
     public void startServer() throws IOException {
         // create socket
-        servsock = new ServerSocket(Integer.valueOf(this.port));
+        Properties props = new Properties();
+        String port = null;
+        String pathDestino = null;
+
+        try {
+            props.load(new FileInputStream("server.properties"));
+            port = props.getProperty("porta");
+            pathDestino = props.getProperty("caminho.bradseg.servicos");
+            System.out.println("escutando na porta: " + port);
+            System.out.println("destino: " + pathDestino);
+            servsock = new ServerSocket(Integer.valueOf(port));
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            System.out.println(e);
+            throw new IOException(e);
+        }
 
         while (true) {
-            LOGGER.info("Waiting...");
-            Socket sock = servsock.accept();
-            LOGGER.info("Accepted connection : " + sock);
-
-            // sendfile
-            BufferedInputStream in = new BufferedInputStream(sock.getInputStream());
-            DataInputStream d = new DataInputStream(in);
+            BufferedInputStream bin = null;
+            DataInputStream dis = null;
             try {
-                String origFileName = d.readUTF();
+                System.out.println("Aguardando conexao...");
+                Socket sock = servsock.accept();
+                System.out.println( sdf.format(new Date()) + " - Conexao iniciada : " + sock);
+
+                // sendfile
+                bin = new BufferedInputStream(sock.getInputStream());
+                dis = new DataInputStream(bin);
+                String origFileName = dis.readUTF();
                 File origFile = new File(origFileName);
-                String destFileName = "C:/dev/java/jar-copy/sharedlib/" + origFile.getName();
-                LOGGER.info("--- origFileName ---");
-                LOGGER.info(origFileName);
-                LOGGER.info(Paths.get(origFileName).toString());
-                LOGGER.info("--- destFileName ---");
-                LOGGER.info(destFileName);
-                LOGGER.info(Paths.get(destFileName).toString());
-                Files.copy(d, Paths.get(destFileName), StandardCopyOption.REPLACE_EXISTING);
-                LOGGER.info("arquivo salvo");
+                String destFileName = pathDestino + origFile.getName();
+                System.out.println("recebendo : " + destFileName);
+                Files.copy(dis, Paths.get(destFileName), StandardCopyOption.REPLACE_EXISTING);
+                System.out.println("arquivo salvo com sucesso");
+                System.out.println("-----------------------------------------------");
             } catch (Exception e) {
-                LOGGER.log(Level.SEVERE, e.getMessage(), e);
-                d.close();
+                System.out.println(e);
+                System.out.println("-----------------------------------------------");
+                try {
+                    dis.close();
+                    bin.close();
+                } catch (Exception ex) {
+                    // não faz nada
+                }
             }
         }
     }
