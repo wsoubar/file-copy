@@ -2,3 +2,7 @@ criar serviço do windows para jar. rodar cmd como administrador
 nssm install <servicename> "C:\Program Files\Java\jre7\java.exe" "-jar <path-to-jar-file>"
 
 
+On Windows you can use the following command.
+
+start javaw -jar JarFile.jar
+By doing so, the Command Prompt Window doesn't stay open.
