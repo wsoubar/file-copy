@@ -1,0 +1,4 @@
+criar serviço do windows para jar. rodar cmd como administrador
+nssm install <servicename> "C:\Program Files\Java\jre7\java.exe" "-jar <path-to-jar-file>"
+
+
