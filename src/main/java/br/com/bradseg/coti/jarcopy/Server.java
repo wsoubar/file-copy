@@ -36,22 +36,22 @@ public class Server {
             port = props.getProperty("porta");
             pathDestino = props.getProperty("caminho.bradseg.servicos");
             System.out.println("escutando na porta: " + port);
-            System.out.println("destino: " + pathDestino);
+            //System.out.println("destino: " + pathDestino);
             servsock = new ServerSocket(Integer.valueOf(port));
         } catch (Exception e) {
             System.out.println(e.getMessage());
             System.out.println(e);
             throw new IOException(e);
         }
-
+        System.out.println("-----------------------------------------------");
         while (true) {
             BufferedInputStream bin = null;
             DataInputStream dis = null;
             try {
                 System.out.println("Aguardando conexao...");
                 Socket sock = servsock.accept();
-                System.out.println("Conexao iniciada : " + sdf.format(new Date()));
-                System.out.println(sock);
+                System.out.println("Conexao   : " + sdf.format(new Date()));
+                // System.out.println(sock);
                 // sendfile
                 bin = new BufferedInputStream(sock.getInputStream());
                 dis = new DataInputStream(bin);
@@ -59,12 +59,12 @@ public class Server {
                 File origFile = new File(origFileName);
                 System.out.println("recebendo : " + origFileName);
                 String destFileName = pathDestino + origFile.getName();
-                System.out.println("destino : " + destFileName);
+                System.out.println("destino   : " + destFileName);
                 Files.copy(dis, Paths.get(destFileName), StandardCopyOption.REPLACE_EXISTING);
-                System.out.println("arquivo salvo com sucesso");
+                System.out.println("status    : SUCESSO");
                 System.out.println("-----------------------------------------------");
             } catch (Exception e) {
-                System.out.println(e);
+                System.out.println("Erro      : " + e.getMessage());
                 System.out.println("-----------------------------------------------");
                 try {
                     dis.close();
