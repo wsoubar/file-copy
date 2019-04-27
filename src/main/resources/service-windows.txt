@@ -1,3 +1,9 @@
+nssm.exe install "SSV File Copy"
+apontar para o server.bat
+
+nssm.exe remove "SSV File Copy"
+
+
 criar serviço do windows para jar. rodar cmd como administrador
 nssm install <servicename> "C:\Program Files\Java\jre7\java.exe" "-jar <path-to-jar-file>"
 
@@ -6,3 +12,10 @@ On Windows you can use the following command.
 
 start javaw -jar JarFile.jar
 By doing so, the Command Prompt Window doesn't stay open.
+
+
+------
+
+    pushd <path-to-jar>
+    nssm.exe install "<service-name>" "<path-to-java.exe>" "-jar <name-of-jar>"
+    nssm.exe set "<service-name>" AppDirectory "<path-to-jar>"

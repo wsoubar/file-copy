@@ -23,10 +23,10 @@ public class App {
         if (cmd.hasOption("client")) {
             type = "client";
         }
-        System.out.println(type);
+        //System.out.println(type);
 
         if (type.equals("server")) {
-            System.out.println("modo servidor");
+            //System.out.println("modo servidor");
             Server server = new Server();
             try {
                 server.startServer();
@@ -34,7 +34,7 @@ public class App {
                 e.printStackTrace();
             }
         } else if (type.equals("client")) {
-            System.out.println("modo cliente");
+            //System.out.println("modo cliente");
             Client client = new Client();
             try {
                 client.execute();

@@ -35,7 +35,8 @@ public class Server {
             props.load(new FileInputStream("server.properties"));
             port = props.getProperty("porta");
             pathDestino = props.getProperty("caminho.bradseg.servicos");
-            System.out.println("escutando na porta: " + port);
+            System.out.println("Servico iniciado em : " + sdf.format(new Date()));
+            System.out.println("escutando na porta  : " + port);
             //System.out.println("destino: " + pathDestino);
             servsock = new ServerSocket(Integer.valueOf(port));
         } catch (Exception e) {
