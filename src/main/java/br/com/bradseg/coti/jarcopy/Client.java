@@ -28,7 +28,7 @@ public class Client {
     }
 
     private void readProperties() throws IOException {
-    
+
         this.clientProps = new Properties();
         this.targetsProps = new Properties();
 
@@ -78,19 +78,23 @@ public class Client {
                     System.out.println("-----------------------------------------------");
                     servidor = (String) i.next();
                     Socket socket = new Socket();
-                    System.out.println("Conectando servidor : "+ servidor);
+                    System.out.println("Conectando servidor : " + servidor);
                     socket.connect(new InetSocketAddress(servidor, Integer.valueOf(porta)));
 
                     // receive file // InputStream in = sock.getInputStream();
                     BufferedOutputStream out = new BufferedOutputStream(socket.getOutputStream());
                     DataOutputStream dos = new DataOutputStream(out);
-                    dos.writeUTF(selectedFile.getAbsolutePath());
+                    dos.writeUTF(selectedFile.getName());
                     Files.copy(selectedFile.toPath(), dos);
 
                     System.out.println("Enviado com SUCESSO.");
                     // fechar conexão??
-                    out.close();
-                    socket.close();
+                    try {
+                        out.close();
+                        socket.close();
+                    } catch (Exception e) {
+                        // TODO: handle exception
+                    }
 
                 } catch (Exception ex) {
                     System.out.println("FALHA!!!!!! ARQUIVO NAO ENVIADO. " + ex.getLocalizedMessage());

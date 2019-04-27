@@ -50,15 +50,16 @@ public class Server {
             try {
                 System.out.println("Aguardando conexao...");
                 Socket sock = servsock.accept();
-                System.out.println( sdf.format(new Date()) + " - Conexao iniciada : " + sock);
-
+                System.out.println("Conexao iniciada : " + sdf.format(new Date()));
+                System.out.println(sock);
                 // sendfile
                 bin = new BufferedInputStream(sock.getInputStream());
                 dis = new DataInputStream(bin);
                 String origFileName = dis.readUTF();
                 File origFile = new File(origFileName);
+                System.out.println("recebendo : " + origFileName);
                 String destFileName = pathDestino + origFile.getName();
-                System.out.println("recebendo : " + destFileName);
+                System.out.println("destino : " + destFileName);
                 Files.copy(dis, Paths.get(destFileName), StandardCopyOption.REPLACE_EXISTING);
                 System.out.println("arquivo salvo com sucesso");
                 System.out.println("-----------------------------------------------");
