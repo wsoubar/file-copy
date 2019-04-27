@@ -41,11 +41,11 @@ public class Client {
             throw new IOException("Erro ao carregar client.properties", e);
         }
         try {
-            targetsProps.load(new FileInputStream("targets.properties"));
+            targetsProps.load(new FileInputStream("servidores.properties"));
         } catch (IOException e) {
-            System.out.println("Erro ao carregar targets.properties");
+            System.out.println("Erro ao carregar servidores.properties");
             System.out.println(e);
-            throw new IOException("Erro ao carregar targets.properties", e);
+            throw new IOException("Erro ao carregar servidores.properties", e);
         }
     }
 
