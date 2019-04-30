@@ -5,10 +5,10 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>br.com.bradseg.coti.jarcopy</groupId>
-  <artifactId>jar-copy</artifactId>
+  <artifactId>ssv-file-copy</artifactId>
   <version>1.0</version>
 
-  <name>jar-copy</name>
+  <name>ssv-file-copy</name>
   <!-- FIXME change it to the project's website -->
   <url>http://www.bradescoseguros.com.br</url>
 

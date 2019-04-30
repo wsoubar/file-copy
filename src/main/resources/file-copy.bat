@@ -1,2 +1,3 @@
-SET JAVA_BIN=.\jre\bin
-%JAVA_BIN%\java -jar jar-copy-1.0.jar client > ssv-file-copy-client.log
+rem SET JAVA_BIN=.\jre\bin
+rem %JAVA_BIN%\java -jar ssv-file-copy-1.0.jar -c -porta 17017 -servidores ./servidores.txt > ssv-file-copy-client.log
+java -jar ssv-file-copy-1.0.jar -c -porta 17017 -servidores ./servidores.txt > ssv-file-copy-client.log

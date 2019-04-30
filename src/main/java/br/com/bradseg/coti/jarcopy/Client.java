@@ -1,12 +1,15 @@
 package br.com.bradseg.coti.jarcopy;
 
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.URL;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,31 +25,12 @@ import javax.swing.JOptionPane;
  */
 public class Client {
 
-    private Properties clientProps = new Properties();
-    private Properties targetsProps = new Properties();
+    private String porta = null;
+    private String arquivoServidores = null;
 
-    public Client() {
-    }
-
-    private void readProperties() throws IOException {
-
-        this.clientProps = new Properties();
-        this.targetsProps = new Properties();
-
-        try {
-            clientProps.load(new FileInputStream("client.properties"));
-        } catch (IOException e) {
-            System.out.println("Erro ao carregar client.properties");
-            System.out.println(e);
-            throw new IOException("Erro ao carregar client.properties", e);
-        }
-        try {
-            targetsProps.load(new FileInputStream("servidores.properties"));
-        } catch (IOException e) {
-            System.out.println("Erro ao carregar servidores.properties");
-            System.out.println(e);
-            throw new IOException("Erro ao carregar servidores.properties", e);
-        }
+    public Client(String porta, String arquivoServidores) {
+        this.porta = porta;
+        this.arquivoServidores = arquivoServidores;
     }
 
     public void execute() throws IOException {
@@ -70,45 +54,66 @@ public class Client {
             System.out.println("===============================================");
             return;
         }
-        this.readProperties();
-        String porta = clientProps.getProperty("porta");
-        List lista = Collections.list(targetsProps.propertyNames());
-        System.out.println("Quantidade de servidores : " + lista.size());
-        Iterator i = lista.iterator();
-        String servidor = null;
-        int erros = 0;
-        List<String> aErros = new ArrayList<String>();
-        System.out.println("-----");
-        while (i.hasNext()) {
-            try {
-                servidor = (String) i.next();
-                Socket socket = new Socket();
-                // System.out.println("Conectando servidor : " + servidor);
-                socket.connect(new InetSocketAddress(servidor, Integer.valueOf(porta)));
-
-                // receive file // InputStream in = sock.getInputStream();
-                BufferedOutputStream out = new BufferedOutputStream(socket.getOutputStream());
-                DataOutputStream dos = new DataOutputStream(out);
-                dos.writeUTF(selectedFile.getName());
-                Files.copy(selectedFile.toPath(), dos);
-                System.out.println(servidor + " : SUCESSO.");
-                // fechar conexão??
+        
+        /*
+         *  Ler arquivo de servidores
+         */
+        BufferedReader reader;
+        try {
+            reader = new BufferedReader(new FileReader(arquivoServidores));
+            String line = reader.readLine();
+            String servidor = null;
+            String porta = null;
+            int erros = 0;
+            List<String> aErros = new ArrayList<String>();
+    
+            while (line != null) {
                 try {
-                    out.close();
-                    socket.close();
-                } catch (Exception e) {
-                }
+                    //carrega linha e pega servidor e porta, se tiver
+                    URL url = new URL("http://"+line);
+                    servidor = url.getHost();
+                    porta = this.porta;
+                    if (url.getPort() > 0) {
+                        porta = String.valueOf(url.getPort());
+                    }
 
-            } catch (Exception ex) {
-                System.out.println(servidor + " : FALHA. " + ex.getMessage());
-                erros++;
-                aErros.add(servidor);
+                    Socket socket = new Socket();
+                    socket.connect(new InetSocketAddress(servidor, Integer.valueOf(porta)), 3000);
+    
+                    // receive file // InputStream in = sock.getInputStream();
+                    BufferedOutputStream out = new BufferedOutputStream(socket.getOutputStream());
+                    DataOutputStream dos = new DataOutputStream(out);
+                    dos.writeUTF(selectedFile.getName());
+                    Files.copy(selectedFile.toPath(), dos);
+                    System.out.println(servidor + (this.porta.equals(porta)? "" : ":" + porta )+ " : SUCESSO.");
+                    // fechar conexão??
+                    try {
+                        out.close();
+                        socket.close();
+                    } catch (Exception e) {
+                    }
+    
+                } catch (Exception ex) {
+                    System.out.println(servidor + ":" + porta + " : FALHA. " + ex.getMessage());
+                    erros++;
+                    aErros.add(servidor+":"+porta);
+                }
+    
+                line = reader.readLine();
+                //Socket socket = new Socket();
+                //socket.connect(new InetSocketAddress(servidor, Integer.valueOf(this.porta)));
+
             }
+            if (erros > 0) {
+                System.out.println("-----------------------------------------------");
+                System.out.println("Erros : " + erros);
+            }
+            reader.close();
+    
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        if (erros > 0) {
-            System.out.println("-----------------------------------------------");
-            System.out.println("Erros : " + erros);
-        }
+
         System.out.println("===============================================");
     }
 

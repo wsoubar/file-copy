@@ -21,24 +21,24 @@ public class Server {
 
     private ServerSocket servsock = null;
     private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+    private String porta = null;
+    private String caminho = null;
 
-    public Server() {
-    }
+    public Server(String porta, String caminho) {
+        this.porta = porta;
+        this.caminho = caminho;
+    }   
 
     public void startServer() throws IOException {
         // create socket
         Properties props = new Properties();
-        String port = null;
-        String pathDestino = null;
+        //String pathDestino = null;
 
         try {
-            props.load(new FileInputStream("server.properties"));
-            port = props.getProperty("porta");
-            pathDestino = props.getProperty("caminho.bradseg.servicos");
             System.out.println("Servico iniciado em : " + sdf.format(new Date()));
-            System.out.println("escutando na porta  : " + port);
+            System.out.println("escutando na porta  : " + this.porta);
             //System.out.println("destino: " + pathDestino);
-            servsock = new ServerSocket(Integer.valueOf(port));
+            servsock = new ServerSocket(Integer.valueOf(this.porta));
         } catch (Exception e) {
             System.out.println(e.getMessage());
             System.out.println(e);
@@ -59,7 +59,7 @@ public class Server {
                 String origFileName = dis.readUTF();
                 File origFile = new File(origFileName);
                 System.out.println("recebendo : " + origFileName);
-                String destFileName = pathDestino + origFile.getName();
+                String destFileName = caminho + origFile.getName();
                 System.out.println("destino   : " + destFileName);
                 Files.copy(dis, Paths.get(destFileName), StandardCopyOption.REPLACE_EXISTING);
                 System.out.println("status    : SUCESSO");

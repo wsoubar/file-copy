@@ -1,6 +1,9 @@
 package br.com.bradseg.coti.jarcopy;
 
 import java.io.IOException;
+import java.net.URL;
+import java.util.Enumeration;
+import java.util.jar.Manifest;
 
 import br.com.bradseg.coti.jarcopy.util.CommandOptions;
 
@@ -17,25 +20,44 @@ public class App {
             System.out.println("parametros invalidos");
             System.exit(-1);
         }
-        if (cmd.hasOption("server")) {
-            type = "server";
+        if (cmd.hasOption("-version") || cmd.hasOption("-v")) {
+            System.out.println("SSV File Copy versão 1.0");
+            return;
         }
-        if (cmd.hasOption("client")) {
-            type = "client";
-        }
-        //System.out.println(type);
-
-        if (type.equals("server")) {
-            //System.out.println("modo servidor");
-            Server server = new Server();
+        if (cmd.hasOption("server") || cmd.hasOption("-server") || cmd.hasOption("-s")) {
+            String porta = cmd.valueOf("-porta");
+            String caminho = cmd.valueOf("-caminho");
+            //System.out.println("porta: [" + porta+"]");
+            //System.out.println("caminho: [" + caminho+"]");
+            if (!cmd.hasOption("-porta")) {
+                System.out.println("Falta parametro '-porta'. Ex: -porta 12000");
+                return;
+            }
+            if (!cmd.hasOption("-caminho")) {
+                System.out.println("Falta parametro '-caminho'. Ex: -caminho /mnt/sharedlib/");
+                return;
+            }
             try {
+                // inicia servidor
+                Server server = new Server(porta, caminho);
                 server.startServer();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        } else if (type.equals("client")) {
-            //System.out.println("modo cliente");
-            Client client = new Client();
+        }
+        if (cmd.hasOption("client") || cmd.hasOption("-client") || cmd.hasOption("-c")) {
+            if (!cmd.hasOption("-porta")) {
+                System.out.println("Falta parametro '-porta'. Ex: -porta 12000");
+                return;
+            }
+
+            if (!cmd.hasOption("-servidores")) {
+                System.out.println("Falta parametro '-servidores'. Ex: -servidores c:\\temp\\servidores.txt");
+                return;
+            }
+            String porta = cmd.valueOf("-porta");
+            String arquivo = cmd.valueOf("-servidores");
+            Client client = new Client(porta, arquivo);
             try {
                 client.execute();
             } catch (IOException e) {
